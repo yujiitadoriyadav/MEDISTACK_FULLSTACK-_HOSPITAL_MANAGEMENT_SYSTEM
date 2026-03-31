@@ -2,26 +2,51 @@ import React, { useState } from "react";
 import axios from "axios"
 import {useNavigate } from 'react-router-dom'
 import { toast } from "react-toastify";
+import { setUserData } from "../redux/userSlice";
+import { useDispatch } from "react-redux";
 const Login = () => {
-    const [state, setState] = useState("admin");
+    const [state, setState] = useState("doctor");
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const[token,setToken] = useState();
      const navigate = useNavigate();
+     const dispatch=useDispatch();
     const submitHandler = async (event) => {
         event.preventDefault();
         try {
-            const { data } = await axios.post("http://localhost:5000/api/admin/login", { email, password })
+           if(state === "admin")
+           {
+             const { data } = await axios.post("http://localhost:5000/api/admin/login", { email, password })
             if (data.success) {
+                                localStorage.removeItem("Doctortoken");
                 localStorage.setItem("Admintoken", data.token);
+                                localStorage.setItem("activeRole", "admin");
                 setToken(data.token);
-                toast.success("Login Sucess");
-                console.log("done")
+                toast.success("Login Success");
+                dispatch(setUserData(data.user));
                 navigate("/admin-dashboard")
+            } else {
+                toast.error(data.message || "Login failed")
             }
+           }
+           else{
+              const { data } = await axios.post("http://localhost:5000/api/doctor/login", { email, password })
+            if (data.success) {
+                                localStorage.removeItem("Admintoken");
+                localStorage.setItem("Doctortoken", data.token);
+                                localStorage.setItem("activeRole", "doctor");
+                setToken(data.token);
+                toast.success("Login Success");
+                dispatch(setUserData(data.user));
+                navigate("/doctor-dashboard")
+            } else {
+                toast.error(data.message || "Login failed")
+            }
+           }
         }
-        catch {
-            console.log("error in login");
+        catch (error) {
+            console.log("error in login:", error);
+            toast.error(error.message || "Login error");
         }
 
     };

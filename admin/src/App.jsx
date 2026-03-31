@@ -10,13 +10,29 @@ import DoctorList from "./pages/admin/DoctorList";
 import DoctorDashboard from "./pages/doctor/DoctorDashboard";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 import DoctorProfile from "./pages/doctor/DoctorProfile";
+import useGetCurrentUser from "./hooks/useGetCurrentUser";
+import { useSelector } from "react-redux";
 
 
 const App = () => {
-  const aToken = true;
-  const dToken = false;
+  
+  
+  const isCheckingAuth = useGetCurrentUser();
 
-  return aToken || dToken ? (
+   const{userData}=useSelector(state=>state.user)
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-[#F8F9FD] flex items-center justify-center">
+        <div className="rounded-xl border border-[#E4E8FF] bg-white px-6 py-4 text-sm font-semibold text-primary">
+          Loading dashboard...
+        </div>
+        <ToastContainer />
+      </div>
+    );
+  }
+
+  return userData ? (
     <div className="bg-[#F8F9FD]">
       <ToastContainer />
       <Navbar />

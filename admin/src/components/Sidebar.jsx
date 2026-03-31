@@ -1,15 +1,16 @@
 import React, { useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { assets } from "../assets/assets_admin/assets";
+import { useSelector } from "react-redux";
 
 
 const Sidebar = () => {
-  const [ aToken ] = useState(true);
-  const [ dToken ] = useState(false);
+   const { userData } = useSelector(state => state.user)
+   console.log(userData)
 
   return (
     <div className="min-h-screen bg-white border-r">
-      {aToken && (
+      {userData && userData.role === 'admin' && (
         <ul className="text-[#515151] mt-5">
           <NavLink
             className={({ isActive }) =>
@@ -61,7 +62,7 @@ const Sidebar = () => {
         </ul>
       )}
 
-      {dToken && (
+      {userData && userData.role === 'doctor' && (
         <ul className="text-[#515151] mt-5">
           <NavLink
             className={({ isActive }) =>
